@@ -1,110 +1,117 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>筋トレ記録</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      margin: 0;
-      background: #f5f5f5;
-      color: #222;
-    }
-    header {
-      background: #111;
-      color: white;
-      padding: 18px;
-      text-align: center;
-      font-size: 20px;
-    }
-    main {
-      padding: 16px;
-    }
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    input, select, textarea, button {
-      width: 100%;
-      margin-top: 8px;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    button {
-      background: black;
-      color: white;
-      font-weight: bold;
-    }
-    .record {
-      border-bottom: 1px solid #eee;
-      padding: 10px 0;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確定申告準備アプリ</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  background: #f5f5f5;
+}
+.card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+}
+button {
+  padding: 10px;
+  margin-top: 10px;
+}
+</style>
 </head>
+
 <body>
 
-<header>筋トレ記録</header>
+<h1>確定申告準備アプリ</h1>
 
-<main>
-  <div class="card">
-    <input id="date" type="date" />
-    <select id="exercise">
-      <option>ベンチプレス</option>
-      <option>インクラインダンベルプレス</option>
-      <option>ディップス</option>
-    </select>
-    <input id="weight" type="number" placeholder="重量 (kg)" />
-    <input id="reps" type="number" placeholder="回数" />
-    <input id="sets" type="number" placeholder="セット数" />
-    <textarea id="memo" placeholder="メモ"></textarea>
-    <button onclick="save()">保存</button>
-  </div>
+<div class="card">
+  <h3>今年の売上</h3>
+  <p id="incomeTotal">¥0</p>
 
-  <div class="card">
-    <h3>記録一覧</h3>
-    <div id="list"></div>
-  </div>
-</main>
+  <h3>今年の経費</h3>
+  <p id="expenseTotal">¥0</p>
+
+  <h3>今年の利益</h3>
+  <p id="profit">¥0</p>
+</div>
+
+<div class="card">
+  <h2>入力</h2>
+
+  <input type="date" id="date"><br><br>
+
+  <input type="number" id="amount" placeholder="金額"><br><br>
+
+  <select id="type">
+    <option value="income">収入</option>
+    <option value="expense">経費</option>
+  </select><br><br>
+
+  <button onclick="addData()">追加</button>
+</div>
+
+<div class="card">
+  <button onclick="downloadCSV()">CSVダウンロード</button>
+  <button onclick="clearData()">データ削除</button>
+</div>
 
 <script>
-  const KEY = "workout";
+let data = JSON.parse(localStorage.getItem("taxData")) || [];
 
-  function getData() {
-    return JSON.parse(localStorage.getItem(KEY) || "[]");
+function addData() {
+  const date = document.getElementById("date").value;
+  const amount = Number(document.getElementById("amount").value);
+  const type = document.getElementById("type").value;
+
+  if (!date || !amount) {
+    alert("入力してください");
+    return;
   }
 
-  function save() {
-    const data = getData();
-    data.unshift({
-      date: document.getElementById("date").value,
-      exercise: document.getElementById("exercise").value,
-      weight: document.getElementById("weight").value,
-      reps: document.getElementById("reps").value,
-      sets: document.getElementById("sets").value,
-      memo: document.getElementById("memo").value
-    });
-    localStorage.setItem(KEY, JSON.stringify(data));
-    render();
-  }
+  data.push({ date, amount, type });
+  localStorage.setItem("taxData", JSON.stringify(data));
 
-  function render() {
-    const list = document.getElementById("list");
-    const data = getData();
-    list.innerHTML = data.map(d => `
-      <div class="record">
-        <b>${d.date} ${d.exercise}</b><br>
-        ${d.weight}kg × ${d.reps}回 × ${d.sets}セット<br>
-        ${d.memo || ""}
-      </div>
-    `).join("");
-  }
+  updateUI();
+}
 
-  render();
+function updateUI() {
+  let income = 0;
+  let expense = 0;
+
+  data.forEach(d => {
+    if (d.type === "income") income += d.amount;
+    if (d.type === "expense") expense += d.amount;
+  });
+
+  document.getElementById("incomeTotal").innerText = "¥" + income;
+  document.getElementById("expenseTotal").innerText = "¥" + expense;
+  document.getElementById("profit").innerText = "¥" + (income - expense);
+}
+
+function downloadCSV() {
+  let csv = "日付,金額,区分\n";
+  data.forEach(d => {
+    csv += `${d.date},${d.amount},${d.type}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "tax_data.csv";
+  link.click();
+}
+
+function clearData() {
+  localStorage.removeItem("taxData");
+  data = [];
+  updateUI();
+}
+
+updateUI();
 </script>
 
 </body>
