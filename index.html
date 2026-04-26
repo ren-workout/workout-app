@@ -1,90 +1,91 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Workout</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Workout</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+}
 
-    header {
-      text-align: center;
-      padding: 20px;
-      font-size: 22px;
-      font-weight: bold;
-      background: #020617;
-      border-bottom: 1px solid #1e293b;
-    }
+header {
+  text-align: center;
+  padding: 20px;
+  font-size: 22px;
+  font-weight: bold;
+  background: #020617;
+  border-bottom: 1px solid #1e293b;
+}
 
-    main {
-      padding: 16px;
-    }
+main {
+  padding: 16px;
+}
 
-    .card {
-      background: #020617;
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 16px;
-      border: 1px solid #1e293b;
-    }
+.card {
+  background: #020617;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #1e293b;
+}
 
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 10px;
-      border: 1px solid #1e293b;
-      background: #0f172a;
-      color: white;
-      font-size: 16px;
-    }
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background: #0f172a;
+  color: white;
+  font-size: 16px;
+}
 
-    textarea {
-      min-height: 80px;
-    }
+textarea {
+  min-height: 80px;
+}
 
-    button {
-      width: 100%;
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      font-weight: bold;
-      font-size: 16px;
-      background: linear-gradient(135deg, #3b82f6, #06b6d4);
-      color: white;
-    }
+button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  font-size: 16px;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  color: white;
+}
 
-    h3 {
-      margin-top: 0;
-    }
+.delete {
+  background: #ef4444;
+  margin-top: 8px;
+}
 
-    .record {
-      padding: 12px 0;
-      border-bottom: 1px solid #1e293b;
-    }
+.previous {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #94a3b8;
+}
 
-    .record:last-child {
-      border-bottom: none;
-    }
+.record {
+  padding: 12px 0;
+  border-bottom: 1px solid #1e293b;
+}
 
-    .title {
-      font-weight: bold;
-      font-size: 15px;
-    }
+.title {
+  font-weight: bold;
+}
 
-    .meta {
-      font-size: 14px;
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-  </style>
+.meta {
+  font-size: 14px;
+  color: #94a3b8;
+}
+</style>
 </head>
 
 <body>
@@ -93,90 +94,120 @@
 
 <main>
 
-  <div class="card">
-    <input id="date" type="date" />
-   <select id="exercise">
+<div class="card">
+
+<input id="date" type="date">
+
+<select id="exercise">
+  <option value="">種目を選択</option>
   <option>ベンチプレス</option>
   <option>インクラインダンベルプレス</option>
-  <option>インクラインダンベルフライ</option>
   <option>ディップス</option>
-  <option>ケーブルクロスオーバー</option>
-
-  <option>ダンベルショルダープレス</option>
-  <option>ショルダープレスマシン</option>
-  <option>サイドレイズ</option>
-  <option>リアレイズ</option>
-  <option>フェイスプル</option>
-
-  <option>チンニング</option>
-  <option>ラットプルダウン</option>
-  <option>ダンベルロー</option>
-  <option>シーテッドロー</option>
-
-  <option>アームカール</option>
-  <option>ハンマーカール</option>
-  <option>ケーブルプレスダウン</option>
-  <option>ライイングエクステンション</option>
-
-  <option>レッグプレス</option>
-  <option>Vスクワット</option>
-  <option>レッグエクステンション</option>
-  <option>レッグカール</option>
-  <option>カーフレイズ</option>
-
-  <option>その他</option>
 </select>
-    <input id="weight" type="number" placeholder="重量 (kg)" />
-    <input id="reps" type="number" placeholder="回数" />
-    <input id="sets" type="number" placeholder="セット数" />
-    <textarea id="memo" placeholder="メモ"></textarea>
-    <button onclick="save()">保存する</button>
-  </div>
 
-  <div class="card">
-    <h3>記録一覧</h3>
-    <div id="list"></div>
-  </div>
+<input id="customExercise" placeholder="または種目を入力">
+
+<div id="previous" class="previous"></div>
+
+<input id="weight" type="number" placeholder="重量 (kg)">
+<input id="reps" type="number" placeholder="回数">
+<input id="sets" type="number" placeholder="セット数">
+<textarea id="memo" placeholder="メモ"></textarea>
+
+<button onclick="save()">保存する</button>
+
+</div>
+
+<div class="card">
+<h3>記録一覧</h3>
+<div id="list"></div>
+</div>
 
 </main>
 
 <script>
-  const KEY = "workout";
+const KEY = "workout";
 
-  function getData() {
-    return JSON.parse(localStorage.getItem(KEY) || "[]");
+document.getElementById("date").valueAsDate = new Date();
+
+function getData() {
+  return JSON.parse(localStorage.getItem(KEY) || "[]");
+}
+
+function save() {
+  const data = getData();
+
+  const exercise = document.getElementById("customExercise").value
+    || document.getElementById("exercise").value;
+
+  if (!exercise) {
+    alert("種目を入力してください");
+    return;
   }
 
-  function save() {
-    const data = getData();
+  const record = {
+    id: Date.now(),
+    date: document.getElementById("date").value,
+    exercise: exercise,
+    weight: document.getElementById("weight").value,
+    reps: document.getElementById("reps").value,
+    sets: document.getElementById("sets").value,
+    memo: document.getElementById("memo").value
+  };
 
-    data.unshift({
-      date: document.getElementById("date").value,
-      exercise: document.getElementById("exercise").value,
-      weight: document.getElementById("weight").value,
-      reps: document.getElementById("reps").value,
-      sets: document.getElementById("sets").value,
-      memo: document.getElementById("memo").value
-    });
+  data.unshift(record);
+  localStorage.setItem(KEY, JSON.stringify(data));
 
-    localStorage.setItem(KEY, JSON.stringify(data));
-    render();
-  }
-
-  function render() {
-    const list = document.getElementById("list");
-    const data = getData();
-
-    list.innerHTML = data.map(d => `
-      <div class="record">
-        <div class="title">${d.date} ${d.exercise}</div>
-        <div class="meta">${d.weight}kg × ${d.reps}回 × ${d.sets}セット</div>
-        <div class="meta">${d.memo || ""}</div>
-      </div>
-    `).join("");
-  }
+  document.getElementById("weight").value = "";
+  document.getElementById("reps").value = "";
+  document.getElementById("sets").value = "";
+  document.getElementById("memo").value = "";
 
   render();
+  updatePrevious();
+}
+
+function render() {
+  const data = getData();
+  const list = document.getElementById("list");
+
+  list.innerHTML = data.map(d => `
+    <div class="record">
+      <div class="title">${d.date} ${d.exercise}</div>
+      <div class="meta">${d.weight}kg × ${d.reps}回 × ${d.sets}セット</div>
+      <div class="meta">${d.memo || ""}</div>
+      <button class="delete" onclick="del(${d.id})">削除</button>
+    </div>
+  `).join("");
+}
+
+function del(id) {
+  const data = getData().filter(d => d.id !== id);
+  localStorage.setItem(KEY, JSON.stringify(data));
+  render();
+}
+
+function updatePrevious() {
+  const exercise = document.getElementById("customExercise").value
+    || document.getElementById("exercise").value;
+
+  const data = getData().filter(d => d.exercise === exercise);
+
+  if (data.length === 0) {
+    document.getElementById("previous").innerText = "";
+    return;
+  }
+
+  const last = data[0];
+
+  document.getElementById("previous").innerText =
+    `前回：${last.weight}kg × ${last.reps}回 × ${last.sets}セット`;
+}
+
+document.getElementById("exercise").addEventListener("change", updatePrevious);
+document.getElementById("customExercise").addEventListener("input", updatePrevious);
+
+render();
 </script>
 
 </body>
