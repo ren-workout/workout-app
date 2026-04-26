@@ -48,6 +48,13 @@ main { padding: 16px; }
   font-size: 12px;
 }
 
+.day small {
+  display: block;
+  font-size: 10px;
+  margin-top: 4px;
+  color: #94a3b8;
+}
+
 .active {
   background: #3b82f6;
 }
@@ -327,13 +334,16 @@ drawCalendar();
   for (let d = 1; d <= lastDate; d++) {
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 
-    const hasWorkout = data.some(r => r.date === dateStr);
+    const workouts = data.filter(r => r.date === dateStr);
 
-    calendar.innerHTML += `
-      <div class="day ${hasWorkout ? 'active' : ''}">
-        ${d}
-      </div>
-    `;
+    const workoutText = workouts.map(w => w.exercise).join("<br>");
+
+calendar.innerHTML += `
+  <div class="day ${workouts.length ? 'active' : ''}">
+    ${d}
+    ${workouts.length ? `<small>${workoutText}</small>` : ''}
+  </div>
+`;
   }
 }
 render();
