@@ -33,7 +33,24 @@ main { padding: 16px; }
   margin-bottom: 16px;
   border: 1px solid #1e293b;
 }
+#calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
 
+.day {
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  background: #0f172a;
+  font-size: 12px;
+}
+
+.active {
+  background: #3b82f6;
+}
 input, select, textarea {
   width: 100%;
   padding: 12px;
@@ -133,7 +150,10 @@ canvas {
 <h3>重量グラフ</h3>
 <canvas id="chart"></canvas>
 </div>
-
+<div class="card">
+  <h3>トレーニングカレンダー</h3>
+  <div id="calendar"></div>
+</div>
 <div class="card">
 <h3>記録一覧</h3>
 <div id="list"></div>
@@ -286,6 +306,40 @@ document.getElementById("customExercise").addEventListener("input", () => {
 render();
 drawChart();
 drawWeightChart();
+drawCalendar();
+  function drawCalendar() {
+  const calendar = document.getElementById("calendar");
+  const data = getData();
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
+
+  calendar.innerHTML = "";
+
+  for (let i = 0; i < firstDay; i++) {
+    calendar.innerHTML += `<div></div>`;
+  }
+
+  for (let d = 1; d <= lastDate; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+    const hasWorkout = data.some(r => r.date === dateStr);
+
+    calendar.innerHTML += `
+      <div class="day ${hasWorkout ? 'active' : ''}">
+        ${d}
+      </div>
+    `;
+  }
+}
+render();
+drawChart();
+drawWeightChart();
+drawCalendar();
 </script>
 
 </body>
