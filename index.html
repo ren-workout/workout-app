@@ -3,54 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>筋トレ記録</title>
+  <title>My Workout</title>
+
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       margin: 0;
-      background: #f5f5f5;
-      color: #222;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
     }
+
     header {
-      background: #111;
-      color: white;
-      padding: 18px;
       text-align: center;
-      font-size: 20px;
+      padding: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
     }
+
     main {
       padding: 16px;
     }
+
     .card {
-      background: white;
-      border-radius: 12px;
+      background: #020617;
+      border-radius: 14px;
       padding: 16px;
       margin-bottom: 16px;
+      border: 1px solid #1e293b;
     }
-    input, select, textarea, button {
+
+    input, select, textarea {
       width: 100%;
-      margin-top: 8px;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+      background: #0f172a;
+      color: white;
       font-size: 16px;
     }
-    button {
-      background: black;
-      color: white;
-      font-weight: bold;
+
+    textarea {
+      min-height: 80px;
     }
+
+    button {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-weight: bold;
+      font-size: 16px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+    }
+
+    h3 {
+      margin-top: 0;
+    }
+
     .record {
-      border-bottom: 1px solid #eee;
-      padding: 10px 0;
+      padding: 12px 0;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .record:last-child {
+      border-bottom: none;
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 4px;
     }
   </style>
 </head>
+
 <body>
 
-<header>筋トレ記録</header>
+<header>My Workout</header>
 
 <main>
+
   <div class="card">
     <input id="date" type="date" />
     <select id="exercise">
@@ -62,13 +104,14 @@
     <input id="reps" type="number" placeholder="回数" />
     <input id="sets" type="number" placeholder="セット数" />
     <textarea id="memo" placeholder="メモ"></textarea>
-    <button onclick="save()">保存</button>
+    <button onclick="save()">保存する</button>
   </div>
 
   <div class="card">
     <h3>記録一覧</h3>
     <div id="list"></div>
   </div>
+
 </main>
 
 <script>
@@ -80,6 +123,7 @@
 
   function save() {
     const data = getData();
+
     data.unshift({
       date: document.getElementById("date").value,
       exercise: document.getElementById("exercise").value,
@@ -88,6 +132,7 @@
       sets: document.getElementById("sets").value,
       memo: document.getElementById("memo").value
     });
+
     localStorage.setItem(KEY, JSON.stringify(data));
     render();
   }
@@ -95,11 +140,12 @@
   function render() {
     const list = document.getElementById("list");
     const data = getData();
+
     list.innerHTML = data.map(d => `
       <div class="record">
-        <b>${d.date} ${d.exercise}</b><br>
-        ${d.weight}kg × ${d.reps}回 × ${d.sets}セット<br>
-        ${d.memo || ""}
+        <div class="title">${d.date} ${d.exercise}</div>
+        <div class="meta">${d.weight}kg × ${d.reps}回 × ${d.sets}セット</div>
+        <div class="meta">${d.memo || ""}</div>
       </div>
     `).join("");
   }
