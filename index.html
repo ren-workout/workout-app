@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Workout</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 body {
   margin: 0;
@@ -22,9 +24,7 @@ header {
   border-bottom: 1px solid #1e293b;
 }
 
-main {
-  padding: 16px;
-}
+main { padding: 16px; }
 
 .card {
   background: #020617;
@@ -42,11 +42,6 @@ input, select, textarea {
   border: 1px solid #1e293b;
   background: #0f172a;
   color: white;
-  font-size: 16px;
-}
-
-textarea {
-  min-height: 80px;
 }
 
 button {
@@ -56,7 +51,6 @@ button {
   border-radius: 12px;
   border: none;
   font-weight: bold;
-  font-size: 16px;
   background: linear-gradient(135deg, #3b82f6, #06b6d4);
   color: white;
 }
@@ -66,24 +60,15 @@ button {
   margin-top: 8px;
 }
 
-.previous {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #94a3b8;
-}
-
 .record {
-  padding: 12px 0;
   border-bottom: 1px solid #1e293b;
+  padding: 10px 0;
 }
 
-.title {
-  font-weight: bold;
-}
+.meta { color: #94a3b8; font-size: 14px; }
 
-.meta {
-  font-size: 14px;
-  color: #94a3b8;
+canvas {
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -99,23 +84,54 @@ button {
 <input id="date" type="date">
 
 <select id="exercise">
-  <option value="">種目を選択</option>
-  <option>ベンチプレス</option>
-  <option>インクラインダンベルプレス</option>
-  <option>ディップス</option>
+<option>ベンチプレス</option>
+<option>インクラインダンベルプレス</option>
+<option>インクラインダンベルフライ</option>
+<option>ディップス</option>
+<option>ケーブルクロス</option>
+
+<option>ダンベルショルダープレス</option>
+<option>サイドレイズ</option>
+<option>リアレイズ</option>
+
+<option>チンニング</option>
+<option>ラットプルダウン</option>
+<option>ダンベルロー</option>
+
+<option>アームカール</option>
+<option>ハンマーカール</option>
+<option>ケーブルプレスダウン</option>
+
+<option>レッグプレス</option>
+<option>Vスクワット</option>
+<option>レッグカール</option>
+
+<option>その他</option>
 </select>
 
 <input id="customExercise" placeholder="または種目を入力">
 
-<div id="previous" class="previous"></div>
+<div id="previous" class="meta"></div>
 
 <input id="weight" type="number" placeholder="重量 (kg)">
 <input id="reps" type="number" placeholder="回数">
 <input id="sets" type="number" placeholder="セット数">
 <textarea id="memo" placeholder="メモ"></textarea>
 
-<button onclick="save()">保存する</button>
+<button onclick="save()">保存</button>
 
+</div>
+
+<div class="card">
+<h3>体重記録</h3>
+<input id="bodyWeight" type="number" placeholder="体重 (kg)">
+<button onclick="saveWeight()">保存</button>
+<canvas id="weightChart"></canvas>
+</div>
+
+<div class="card">
+<h3>重量グラフ</h3>
+<canvas id="chart"></canvas>
 </div>
 
 <div class="card">
@@ -127,11 +143,16 @@ button {
 
 <script>
 const KEY = "workout";
+const WEIGHT_KEY = "bodyweight";
 
 document.getElementById("date").valueAsDate = new Date();
 
 function getData() {
   return JSON.parse(localStorage.getItem(KEY) || "[]");
+}
+
+function getWeightData() {
+  return JSON.parse(localStorage.getItem(WEIGHT_KEY) || "[]");
 }
 
 function save() {
@@ -140,31 +161,33 @@ function save() {
   const exercise = document.getElementById("customExercise").value
     || document.getElementById("exercise").value;
 
-  if (!exercise) {
-    alert("種目を入力してください");
-    return;
-  }
-
-  const record = {
+  data.unshift({
     id: Date.now(),
     date: document.getElementById("date").value,
-    exercise: exercise,
+    exercise,
     weight: document.getElementById("weight").value,
     reps: document.getElementById("reps").value,
     sets: document.getElementById("sets").value,
     memo: document.getElementById("memo").value
-  };
+  });
 
-  data.unshift(record);
   localStorage.setItem(KEY, JSON.stringify(data));
-
-  document.getElementById("weight").value = "";
-  document.getElementById("reps").value = "";
-  document.getElementById("sets").value = "";
-  document.getElementById("memo").value = "";
 
   render();
   updatePrevious();
+  drawChart();
+}
+
+function saveWeight() {
+  const data = getWeightData();
+
+  data.unshift({
+    date: new Date().toISOString().slice(0,10),
+    weight: document.getElementById("bodyWeight").value
+  });
+
+  localStorage.setItem(WEIGHT_KEY, JSON.stringify(data));
+  drawWeightChart();
 }
 
 function render() {
@@ -173,9 +196,9 @@ function render() {
 
   list.innerHTML = data.map(d => `
     <div class="record">
-      <div class="title">${d.date} ${d.exercise}</div>
-      <div class="meta">${d.weight}kg × ${d.reps}回 × ${d.sets}セット</div>
-      <div class="meta">${d.memo || ""}</div>
+      <b>${d.date} ${d.exercise}</b><br>
+      ${d.weight}kg × ${d.reps}回 × ${d.sets}セット<br>
+      <span class="meta">${d.memo || ""}</span>
       <button class="delete" onclick="del(${d.id})">削除</button>
     </div>
   `).join("");
@@ -185,6 +208,7 @@ function del(id) {
   const data = getData().filter(d => d.id !== id);
   localStorage.setItem(KEY, JSON.stringify(data));
   render();
+  drawChart();
 }
 
 function updatePrevious() {
@@ -201,13 +225,67 @@ function updatePrevious() {
   const last = data[0];
 
   document.getElementById("previous").innerText =
-    `前回：${last.weight}kg × ${last.reps}回 × ${last.sets}セット`;
+    `前回：${last.weight}kg × ${last.reps}回`;
 }
 
-document.getElementById("exercise").addEventListener("change", updatePrevious);
-document.getElementById("customExercise").addEventListener("input", updatePrevious);
+let chart, weightChart;
+
+function drawChart() {
+  const exercise = document.getElementById("customExercise").value
+    || document.getElementById("exercise").value;
+
+  const data = getData().filter(d => d.exercise === exercise);
+
+  const labels = data.map(d => d.date).reverse();
+  const weights = data.map(d => d.weight).reverse();
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("chart"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: exercise,
+        data: weights
+      }]
+    }
+  });
+}
+
+function drawWeightChart() {
+  const data = getWeightData();
+
+  const labels = data.map(d => d.date).reverse();
+  const weights = data.map(d => d.weight).reverse();
+
+  if (weightChart) weightChart.destroy();
+
+  weightChart = new Chart(document.getElementById("weightChart"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: "体重",
+        data: weights
+      }]
+    }
+  });
+}
+
+document.getElementById("exercise").addEventListener("change", () => {
+  updatePrevious();
+  drawChart();
+});
+
+document.getElementById("customExercise").addEventListener("input", () => {
+  updatePrevious();
+  drawChart();
+});
 
 render();
+drawChart();
+drawWeightChart();
 </script>
 
 </body>
